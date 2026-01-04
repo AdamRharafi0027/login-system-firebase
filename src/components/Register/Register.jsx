@@ -1,6 +1,7 @@
 import { useState } from "react";
 import FormLayout from "../ui/FormLayout/FormLayout";
-import "./Register.css";
+import "../ui/buttonStyle.css";
+import { Link } from "react-router-dom";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -25,7 +26,7 @@ const Register = () => {
                 placeholder="enter your username"
                 id="username"
                 autoComplete="off"
-                className="bg-white/90 outline-none focus:border-purple-500 focus:shadow-xl/20 shadow-purple-700 border-2 w-full placeholder:text-gray-400 px-5 py-3 rounded-md "
+                className="bg-white/90 outline-none focus:border-purple-500 focus:shadow-xl/20 shadow-purple-700 border-2 w-full placeholder:text-gray-400 duration-100 transition-all~ px-5 py-3 rounded-md "
               />
             </div>
             <div className="flex flex-col gap-5 mb-5 w-100">
@@ -37,7 +38,7 @@ const Register = () => {
                 placeholder="email@gmail.com"
                 id="email"
                 autoComplete="off"
-                className="bg-white/90 outline-none focus:border-purple-500 focus:shadow-xl/20 shadow-purple-700 border-2 w-full placeholder:text-gray-400 px-5 py-3 rounded-md "
+                className="bg-white/90 outline-none focus:border-purple-500 focus:shadow-xl/20 shadow-purple-700 border-2 w-full placeholder:text-gray-400 duration-100 transition-all~ px-5 py-3 rounded-md "
               />
             </div>
             <div className="flex flex-col gap-5 mb-5 w-100">
@@ -49,7 +50,7 @@ const Register = () => {
                 placeholder="enter your password"
                 id="password"
                 autoComplete="off"
-                className="bg-white/90 outline-none focus:border-purple-500 focus:shadow-xl/20 shadow-purple-700 border-2 w-full placeholder:text-gray-400 px-5 py-3 rounded-md "
+                className="bg-white/90 outline-none focus:border-purple-500 focus:shadow-xl/20 shadow-purple-700 border-2 w-full placeholder:text-gray-400 duration-100 transition-all~ px-5 py-3 rounded-md "
               />
             </div>
             <div className="flex flex-col gap-5 mb-5 w-100">
@@ -60,7 +61,7 @@ const Register = () => {
                 type="password"
                 placeholder="confirm your password"
                 autoComplete="off"
-                className="bg-white/90 outline-none focus:border-purple-500 focus:shadow-xl/20 shadow-purple-700 border-2 w-full placeholder:text-gray-400 px-5 py-3 rounded-md "
+                className="bg-white/90 outline-none focus:border-purple-500 focus:shadow-xl/20 shadow-purple-700 border-2 w-full placeholder:text-gray-400 duration-100 transition-all~ px-5 py-3 rounded-md "
               />
             </div>
           </div>
@@ -80,9 +81,9 @@ const Register = () => {
           </button>
           <p>
             Already have an account?{" "}
-            <a href="#" className="font-bold text-purple-700">
+            <Link to={"/"} className="font-bold text-purple-700">
               Log in
-            </a>
+            </Link>
             .
           </p>
         </section>
