@@ -1,74 +1,115 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../../firebase";
+
 import FormLayout from "../ui/FormLayout/FormLayout";
-import "../ui/buttonStyle.css";
-import { Link } from "react-router-dom";
+import FormHeader from "../ui/FormHeader";
+import FormButtons from "../ui/FormButtons";
+import InputsLayout from "../ui/InputsLayout";
+import FormContainer from "../ui/FormContainer";
+import FormCheckBox from "../ui/FormCheckBox";
+import Message from "../ui/Message/Message";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const navigate = useNavigate();
+
+  const inputsContent = [
+    { label: "Email", placeholder: "email@gmail.com", type: "email" },
+    { label: "Password", placeholder: "enter your password", type: "password" },
+  ];
+
+  const handleInputChange = (e, item) => {
+    switch (item.label) {
+      case "Email":
+        setEmail(e.target.value);
+        break;
+      case "Password":
+        setPassword(e.target.value);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const checkValues = (item) => {
+    switch (item.label) {
+      case "Email":
+        return email;
+      case "Password":
+        return password;
+      default:
+        return "";
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      setSuccess("You logged in successfully 🎉");
+      setTimeout(() => {
+        navigate("/welcome", {
+          state: { message: "You logged in successfully 🎉" },
+        });
+      }, 1500);
+    } catch (err) {
+      setError("Invalid email or password");
+    }
+  };
 
   return (
-    <>
-      <FormLayout>
-        <section className="flex flex-col rounded-3xl items-center gap-2 bg-white/20 backdrop-blur-md border border-white/20 text-white px-20 py-10 shadow-sm hover:shadow-md transition-all duration-200 ">
-          <div className="mb-2 text-white text-center">
-            <h1 className="text-4xl font-bold ">Log In to Your Account</h1>
-            <p>Welcome back! Please enter your credentials</p>
-          </div>
-          <div className="inouts-boxes flex flex-col my-3">
-            <div className="flex flex-col gap-5 mb-5 w-100">
-              <label htmlFor="email" className="font-bold">
-                Email
-              </label>
-              <input
-                type="email"
-                placeholder="email@gmail.com"
-                id="email"
-                autoComplete="off"
-                className="bg-white/90 outline-none focus:border-purple-500 focus:shadow-xl/20 shadow-purple-700 border-2 w-full placeholder:text-gray-400 duration-100 transition-all~ px-5 py-3 rounded-md "
-              />
-            </div>
-            <div className="flex flex-col gap-5  w-100">
-              <label htmlFor="password" className="font-bold">
-                Password
-              </label>
-              <input
-                type="password"
-                placeholder="enter your password"
-                id="password"
-                autoComplete="off"
-                className="bg-white/90 outline-none focus:border-purple-500 focus:shadow-xl/20 shadow-purple-700 border-2 w-full placeholder:text-gray-400 duration-100 transition-all~ px-5 py-3 rounded-md "
-              />
-            </div>
-          </div>
-          <div className="flex items-center justify-between  w-full">
-            <a href="#">Forgot Password!</a>
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="terms"
-                className="w-5 h-5 cursor-pointer"
-              />
-              <label htmlFor="terms" className="font-bold cursor-pointer">
-                Remember Me
-              </label>
-            </div>
-          </div>
-          <button type="submit">
-            <span class="text">Log In</span>
-            <span>Now!</span>
-          </button>
-          <p>
-            Don't have an account?{" "}
-            <Link to={"/register"} className="font-bold text-purple-700">
-              Sign up now.
-            </Link>
-            .
-          </p>
-        </section>
-      </FormLayout>
-    </>
+    <FormLayout onsubmit={handleLogin}>
+      <FormContainer>
+        <FormHeader
+          headline="Log In to Your Account"
+          subtitle="Welcome back! Please enter your credentials"
+        />
+
+         {/* SUCCESS MESSAGE */}
+        {success && <Message type="success" text={success} />}
+
+        {/* ERROR MESSAGE */}
+        {error && <Message type="error" text={error} />}
+
+        <div className="inputs-boxes flex flex-col my-3">
+          {inputsContent.map((item, i) => (
+            <InputsLayout
+              key={i}
+              label={item.label}
+              placeholder={item.placeholder}
+              type={item.type}
+              onchange={(e) => handleInputChange(e, item)}
+              value={checkValues(item)}
+            />
+          ))}
+        </div>
+
+        <div className="flex items-center justify-between w-full">
+          <a href="#" className="text-sm text-purple-700">
+            Forgot Password?
+          </a>
+          <FormCheckBox label="remember" type="checkbox" text="Remember Me" />
+        </div>
+
+        <FormButtons text="Log In" />
+
+        <p>
+          Don&apos;t have an account?{" "}
+          <Link to="/register" className="font-bold text-purple-700">
+            Sign up now
+          </Link>
+          .
+        </p>
+      </FormContainer>
+    </FormLayout>
   );
 };
 

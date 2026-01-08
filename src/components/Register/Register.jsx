@@ -2,93 +2,121 @@ import { useState } from "react";
 import FormLayout from "../ui/FormLayout/FormLayout";
 import "../ui/buttonStyle.css";
 import { Link } from "react-router-dom";
+import FormHeader from "../ui/FormHeader";
+import InputsLayout from "../ui/InputsLayout";
+import FormContainer from "../ui/FormContainer";
+import FormButtons from "../ui/FormButtons";
+import FormCheckBox from "../ui/FormCheckBox";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../../firebase";
+import Message from "../ui/Message/Message";
 
 const Register = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    setError("");
+    setSuccess("");
+
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+
+      // reset inputs
+      setUsername("");
+      setEmail("");
+      setPassword("");
+
+      setSuccess("Account created successfully 🎉");
+    } catch (e) {
+      setError(e.message);
+    }
+  };
+
+  const inputsContent = [
+    { label: "Username", placeholder: "enter your username", type: "text" },
+    { label: "Email", placeholder: "email@gmail.com", type: "email" },
+    { label: "Password", placeholder: "enter your password", type: "password" },
+  ];
+
+  const handleInputChange = (e, item) => {
+    switch (item.label) {
+      case "Username":
+        setUsername(e.target.value);
+        break;
+      case "Email":
+        setEmail(e.target.value);
+        break;
+      case "Password":
+        setPassword(e.target.value);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const checkValues = (item) => {
+    switch (item.label) {
+      case "Username":
+        return username;
+      case "Email":
+        return email;
+      case "Password":
+        return password;
+      default:
+        return "";
+    }
+  };
 
   return (
-    <>
-      <FormLayout>
-        <section className="flex flex-col rounded-3xl items-center gap-2 bg-white/20 backdrop-blur-md border border-white/20 text-white px-20 py-10 shadow-sm hover:shadow-md transition-all duration-200 ">
-          <div className="mb-2 text-white text-center">
-            <h1 className="text-4xl font-bold ">Create New Account</h1>
-            <p>Sign up to start using our service!</p>
-          </div>
-          <div className="inouts-boxes flex flex-col my-3">
-            <div className="flex flex-col gap-5 mb-5 w-100">
-              <label htmlFor="Username" className="font-bold">
-                Username
-              </label>
-              <input
-                type="text"
-                placeholder="enter your username"
-                id="username"
-                autoComplete="off"
-                className="bg-white/90 outline-none focus:border-purple-500 focus:shadow-xl/20 shadow-purple-700 border-2 w-full placeholder:text-gray-400 duration-100 transition-all~ px-5 py-3 rounded-md "
-              />
-            </div>
-            <div className="flex flex-col gap-5 mb-5 w-100">
-              <label htmlFor="email" className="font-bold">
-                Email
-              </label>
-              <input
-                type="email"
-                placeholder="email@gmail.com"
-                id="email"
-                autoComplete="off"
-                className="bg-white/90 outline-none focus:border-purple-500 focus:shadow-xl/20 shadow-purple-700 border-2 w-full placeholder:text-gray-400 duration-100 transition-all~ px-5 py-3 rounded-md "
-              />
-            </div>
-            <div className="flex flex-col gap-5 mb-5 w-100">
-              <label htmlFor="password" className="font-bold">
-                Password
-              </label>
-              <input
-                type="password"
-                placeholder="enter your password"
-                id="password"
-                autoComplete="off"
-                className="bg-white/90 outline-none focus:border-purple-500 focus:shadow-xl/20 shadow-purple-700 border-2 w-full placeholder:text-gray-400 duration-100 transition-all~ px-5 py-3 rounded-md "
-              />
-            </div>
-            <div className="flex flex-col gap-5 mb-5 w-100">
-              <label htmlFor="confPassword" className="font-bold">
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                placeholder="confirm your password"
-                autoComplete="off"
-                className="bg-white/90 outline-none focus:border-purple-500 focus:shadow-xl/20 shadow-purple-700 border-2 w-full placeholder:text-gray-400 duration-100 transition-all~ px-5 py-3 rounded-md "
-              />
-            </div>
-          </div>
-          <div className="flex items-center  gap-3">
-            <input
-              type="checkbox"
-              id="terms"
-              className="w-5 h-5 cursor-pointer"
+    <FormLayout onsubmit={handleRegister}>
+      <FormContainer>
+        <FormHeader
+          headline="Create New Account"
+          subtitle="Sign up to start using our service!"
+        />
+
+        {/* SUCCESS MESSAGE */}
+        {success && <Message type="success" text={success} />}
+
+        {/* ERROR MESSAGE */}
+        {error && <Message type="error" text={error} />}
+
+        <div className="inputs-boxes flex flex-col my-3">
+          {inputsContent.map((item, i) => (
+            <InputsLayout
+              key={i}
+              label={item.label}
+              placeholder={item.placeholder}
+              type={item.type}
+              onchange={(e) => handleInputChange(e, item)}
+              value={checkValues(item)}   
             />
-            <label htmlFor="terms" className="font-bold cursor-pointer">
-              I agree to the Terms and Conditions and Privacy Policy
-            </label>
-          </div>
-          <button type="submit">
-            <span class="text">Sign Up</span>
-            <span>Now!</span>
-          </button>
-          <p>
-            Already have an account?{" "}
-            <Link to={"/"} className="font-bold text-purple-700">
-              Log in
-            </Link>
-            .
-          </p>
-        </section>
-      </FormLayout>
-    </>
+          ))}
+        </div>
+
+        <FormCheckBox
+          label="terms"
+          type="checkbox"
+          text="I agree to the Terms and Conditions and Privacy Policy"
+        />
+
+        <FormButtons text="Sign Up" />
+
+        <p>
+          Already have an account?{" "}
+          <Link to="/" className="font-bold text-purple-700">
+            Log in
+          </Link>
+          .
+        </p>
+      </FormContainer>
+    </FormLayout>
   );
 };
 

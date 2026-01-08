@@ -2,6 +2,7 @@ import React from 'react'
 import Register from './components/Register/Register'
 import Login from './components/Login/Login'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import Welcome from './components/Welcome'
 
 const App = () => {
   return (
@@ -11,6 +12,7 @@ const App = () => {
           <Routes>
             <Route path='/' element={<Login />}/>
             <Route path='/register' element={<Register />} />
+            <Route path='/welcome' element={<Welcome />} />
           </Routes>
         </BrowserRouter>
       </div>
