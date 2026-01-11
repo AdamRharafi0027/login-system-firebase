@@ -8,7 +8,8 @@ import FormContainer from "../ui/FormContainer";
 import FormButtons from "../ui/FormButtons";
 import FormCheckBox from "../ui/FormCheckBox";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../../firebase";
+import { auth, db } from "../../../firebase";
+import { doc, setDoc } from "firebase/firestore";
 import Message from "../ui/Message/Message";
 
 const Register = () => {
@@ -23,9 +24,20 @@ const Register = () => {
 
     setError("");
     setSuccess("");
-
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      const user = userCredential.user;
+      await setDoc(doc(db, "users", user.uid), {
+        username,
+        email,
+        role: "user",
+        createdAt: new Date(),
+      });
 
       // reset inputs
       setUsername("");
@@ -95,7 +107,7 @@ const Register = () => {
               placeholder={item.placeholder}
               type={item.type}
               onchange={(e) => handleInputChange(e, item)}
-              value={checkValues(item)}   
+              value={checkValues(item)}
             />
           ))}
         </div>

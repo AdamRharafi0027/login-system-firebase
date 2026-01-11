@@ -1,8 +1,8 @@
 
-const FormButtons = ({text}) => {
+const FormButtons = ({text, onclick}) => {
   return (
     <>
-        <button type="submit">
+        <button onClick={onclick} type="submit">
             <span className="text">{text}</span>
             <span>Now!</span>
           </button>

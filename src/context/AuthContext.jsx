@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth } from "../../firebase";
+import { auth, db } from "../../firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 // 1️⃣ Create context
 const AuthContext = createContext(null);
@@ -10,16 +11,26 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // 3️⃣ Listen to auth state changes
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
+ useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    if (currentUser) {
+      const ref = doc(db, "users", currentUser.uid);
+      const snap = await getDoc(ref);
 
-    // 4️⃣ Cleanup
-    return () => unsubscribe();
-  }, []);
+      setUser({
+        uid: currentUser.uid,
+        email: currentUser.email,
+        ...snap.data(),
+      });
+    } else {
+      setUser(null);
+    }
+
+    setLoading(false);
+  });
+
+  return () => unsubscribe();
+}, []);
 
   // 5️⃣ Logout function
   const logout = async () => {
